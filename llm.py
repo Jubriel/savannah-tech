@@ -13,6 +13,7 @@ class AnomalySummarizer:
     def __init__(self):
         self.llm = None
         self.chain = None
+        self.prompt = None
         self._initialize_llm()
 
     def _initialize_llm(self):
@@ -20,7 +21,9 @@ class AnomalySummarizer:
         try:
             self.llm = OllamaLLM(
                 model=settings.LLM_MODEL,
-                base_url=settings.LLM_HOST
+                base_url=settings.LLM_HOST,
+                request_timeout=1000,
+                max_tokens=500
             )
 
             prompt_template = """
@@ -35,12 +38,12 @@ class AnomalySummarizer:
                 Anomaly Data:
                 {anomaly_text}
 
-                Provide a concise and structured summary with severity levels
-                and actionable insights. Do not Hallucinate or make up data.
+                Provide a concise and structured summary with severity levels.
+                Do not Hallucinate or make up data.
             """
 
-            prompt = PromptTemplate.from_template(prompt_template)
-            self.chain = self.llm | prompt
+            self.prompt = PromptTemplate.from_template(prompt_template)
+            self.chain = self.prompt | self.llm
 
             logger.info(f"Initialized LLM with model: {settings.LLM_MODEL}")
 
@@ -141,8 +144,9 @@ class AnomalySummarizer:
             # Generate summary using LLM
             if self.chain:
                 try:
-                    llm_response = self.chain.run(anomaly_text=anomaly_text)
-                    summary_text = llm_response.strip()
+                    text = self.prompt.format(anomaly_text=anomaly_text)
+                    summary_text = self.chain.invoke(text)
+                    print("Summary: ", str(summary_text))
                 except Exception as e:
                     logger.error(f"LLM generation failed: {e}")
                     summary_text = self._generate_fallback_summary(anomalies)
@@ -162,7 +166,7 @@ class AnomalySummarizer:
                 "summary": summary_text,
                 "anomaly_count": len(anomalies),
                 "status": status,
-                "high_severity_count": high_severity_count,
+                # "high_severity_count": high_severity_count,
                 "timestamp": anomalies[-1].get('timestamp'
                                                ) if anomalies else None
             }

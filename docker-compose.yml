@@ -18,7 +18,8 @@ services:
       dockerfile: Dockerfile.llm
     restart: unless-stopped
     environment:
-      - LLM_MODEL=llama3.2:3b
+      - LLM_MODEL=llama3.2
+      - LLM_HOST=http://ollama:11434 
     volumes:
       - ollama_data:/root/.ollama
     networks:
