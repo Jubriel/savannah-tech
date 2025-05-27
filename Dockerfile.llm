@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+# Install Ollama
+RUN apt-get update && apt-get install -y \
+    curl \
+    && curl -fsSL https://ollama.ai/install.sh | sh \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements and install
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Start script that runs Ollama and pulls model
+COPY start-llm.sh start-llm.sh
+RUN chmod +x start-llm.sh
+
+EXPOSE 11434
+
+CMD ["/app/start-llm.sh"]

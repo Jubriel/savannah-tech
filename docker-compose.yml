@@ -1,0 +1,100 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - monitoring-network
+
+  ollama:
+    build:
+      context: .
+      dockerfile: Dockerfile.llm
+    restart: unless-stopped
+    environment:
+      - LLM_MODEL=llama3.2:3b
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  sensor_generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.main
+    command: python generator.py
+    restart: unless-stopped
+    environment:
+      - REDIS_HOST=redis
+      - LOG_LEVEL=INFO
+      - SENSOR_ID=wtf-pipe-1
+      - DATA_GENERATION_INTERVAL=2
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - monitoring-network
+
+  anomaly_detector:
+    build:
+      context: .
+      dockerfile: Dockerfile.main
+    command: python detector.py
+    restart: unless-stopped
+    environment:
+      - REDIS_HOST=redis
+      - LOG_LEVEL=INFO
+      - ANOMALY_LOG_PATH=/app/storage/anomaly_log.json
+    volumes:
+      - anomaly_storage:/app/storage
+    depends_on:
+      redis:
+        condition: service_healthy
+      sensor_generator:
+        condition: service_started
+    networks:
+      - monitoring-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.main
+    command: python -m uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    environment:
+      - REDIS_HOST=redis
+      - LLM_HOST=http://ollama:11434
+      - LOG_LEVEL=INFO
+      - ANOMALY_LOG_PATH=/app/storage/anomaly_log.json
+    volumes:
+      - anomaly_storage:/app/storage
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+      anomaly_detector:
+        condition: service_started
+    networks:
+      - monitoring-network
+
+volumes:
+  anomaly_storage:
+  ollama_data:
+
+networks:
+  monitoring-network:
+    driver: bridge

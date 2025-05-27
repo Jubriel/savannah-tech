@@ -1,0 +1,16 @@
+[project]
+name = "savannah"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.12",
+    "langchain>=0.3.25",
+    "langchain-community>=0.3.24",
+    "langchain-ollama>=0.3.3",
+    "ollama>=0.4.8",
+    "pip>=25.1.1",
+    "redis>=6.1.0",
+    "uvicorn>=0.34.2",
+]
