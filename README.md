@@ -21,3 +21,83 @@ A robust, scalable system for monitoring water treatment sensor data, detecting 
 | **Data Dropout** | Missing sensor data | >10s gap | High |
 
 ## 🏗️ Architecture
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Data Generator │───▶│  Redis PubSub   │───▶│Anomaly Detector │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+│
+▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   REST API      │◀───│  LLM Summary    │◀───│  File Storage   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Docker & Docker Compose
+- 4GB+ RAM (for LLM model)
+- 2GB+ disk space
+
+### Launch the System
+```bash
+# Clone and start
+git clone <repository>
+cd water-treatment-monitoring
+
+# Start all services
+docker-compose up --build
+
+# Check system health
+curl http://localhost:8000/health
+Verify Operation
+bash# View recent anomalies
+curl http://localhost:8000/anomalies
+
+# Get AI summary
+curl http://localhost:8000/summary
+
+# Check system status
+curl http://localhost:8000/status
+
+# View metrics
+curl http://localhost:8000/metrics
+```
+
+Custom Configuration
+# Example with custom thresholds
+DRIFT_THRESHOLD=35.0 
+PRESSURE_SPIKE_THRESHOLD=3.5 
+
+docker-compose up
+
+📡 API Endpoints
+Core Endpoints
+
+ - GET /health - System health check
+ - GET /anomalies?limit=20&severity=high - Recent anomalies
+ - GET /summary?anomaly_count=10 - AI-generated summary
+ - GET /status - Component status
+ - GET /metrics - System metrics
+ - DELETE /anomalies - Clear anomaly log
+
+# Response Examples
+
+### Health Check
+```json{
+  "status": "healthy",
+  "components": {
+    "redis": "healthy",
+    "llm": "healthy",
+    "storage": "healthy"
+  },
+  "uptime_seconds": 1800
+}
+```
+### Anomaly Summary
+```json{
+  "summary": "Detected 3 high-severity anomalies requiring immediate attention...",
+  "anomaly_count": 15,
+  "status": "warning",
+  "high_severity_count": 3,
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
