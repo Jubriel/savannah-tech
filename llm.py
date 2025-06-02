@@ -145,8 +145,8 @@ class AnomalySummarizer:
             if self.chain:
                 try:
                     text = self.prompt.format(anomaly_text=anomaly_text)
-                    summary_text = self.chain.invoke(text)
-                    print("Summary: ", str(summary_text))
+                    summary_text = self.chain.invoke(input=text)
+
                 except Exception as e:
                     logger.error(f"LLM generation failed: {e}")
                     summary_text = self._generate_fallback_summary(anomalies)

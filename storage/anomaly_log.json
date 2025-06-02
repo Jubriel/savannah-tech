@@ -4,3 +4,15 @@
 {"type": "spike", "timestamp": "2025-05-27T12:56:56.197820Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 121.4, "message": "Flow spike detected: 121.4"}
 {"type": "spike", "timestamp": "2025-05-27T12:57:06.202199Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 127.0, "message": "Flow spike detected: 127.0"}
 {"type": "spike", "timestamp": "2025-05-27T12:57:12.205779Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 125.4, "message": "Flow spike detected: 125.4"}
+{"type": "spike", "timestamp": "2025-06-02T15:41:53.136878Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 127.2, "message": "Flow spike detected: 127.2"}
+{"type": "spike", "timestamp": "2025-06-02T15:41:57.139887Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 121.6, "message": "Flow spike detected: 121.6"}
+{"type": "spike", "timestamp": "2025-06-02T15:42:03.141000Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 127.8, "message": "Flow spike detected: 127.8"}
+{"type": "spike", "timestamp": "2025-06-02T15:43:31.987318Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 124.9, "message": "Flow spike detected: 124.9"}
+{"type": "spike", "timestamp": "2025-06-02T15:43:54.000468Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 127.9, "message": "Flow spike detected: 127.9"}
+{"type": "spike", "timestamp": "2025-06-02T15:43:56.001147Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 124.5, "message": "Flow spike detected: 124.5"}
+{"type": "spike", "timestamp": "2025-06-02T15:44:14.004955Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 125.0, "message": "Flow spike detected: 125.0"}
+{"type": "spike", "timestamp": "2025-06-02T15:44:26.006813Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 125.0, "message": "Flow spike detected: 125.0"}
+{"type": "spike", "timestamp": "2025-06-02T15:44:32.015419Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 121.8, "message": "Flow spike detected: 121.8"}
+{"type": "spike", "timestamp": "2025-06-02T15:44:42.017008Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 123.3, "message": "Flow spike detected: 123.3"}
+{"type": "spike", "timestamp": "2025-06-02T15:45:48.040855Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 128.2, "message": "Flow spike detected: 128.2"}
+{"type": "spike", "timestamp": "2025-06-02T15:46:08.054206Z", "sensor_id": "wtf-pipe-1", "parameter": "flow", "value": 123.2, "message": "Flow spike detected: 123.2"}

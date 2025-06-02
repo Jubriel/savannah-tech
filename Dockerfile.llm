@@ -20,6 +20,8 @@ COPY . .
 COPY start-llm.sh start-llm.sh
 RUN chmod +x start-llm.sh
 
+ENV LLM_HOST=0.0.0.0:11434
+
 EXPOSE 11434
 
 CMD ["/app/start-llm.sh"]

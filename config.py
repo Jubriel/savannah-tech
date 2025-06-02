@@ -31,7 +31,7 @@ class Settings:
 
     # LLM Configuration
     LLM_MODEL: str = os.getenv('LLM_MODEL', 'llama3.2')
-    LLM_HOST: str = os.getenv('LLM_HOST', 'http://localhost:11434')
+    LLM_HOST: str = os.getenv('http://ollama:11434', 'http://localhost:11434')
     SUMMARY_ANOMALY_COUNT: int = int(os.getenv('SUMMARY_ANOMALY_COUNT', '10'))
 
     # API Configuration
