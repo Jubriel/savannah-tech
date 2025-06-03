@@ -74,7 +74,6 @@ class SummaryResponse(BaseModel):
     summary: str
     anomaly_count: int
     status: str
-    # high_severity_count: int = 0
     timestamp: Optional[str] = None
 
 
