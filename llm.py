@@ -1,4 +1,4 @@
-# typed: ignore
+# type: ignore
 import json
 from typing import List, Dict, Any, Optional
 from pathlib import Path
@@ -24,7 +24,7 @@ class AnomalySummarizer:
                 model=settings.LLM_MODEL,
                 base_url=settings.LLM_HOST,
                 request_timeout=1000,
-                max_tokens=500
+                max_tokens=300
             )
 
             prompt_template = """
@@ -39,8 +39,9 @@ class AnomalySummarizer:
                 Anomaly Data:
                 {anomaly_text}
 
-                Provide a concise and structured summary with severity levels.
+                Provide a concise and structured summary
                 Do not Hallucinate or make up data.
+                No recommendations, just a summary.
             """
 
             self.prompt = PromptTemplate.from_template(prompt_template)
