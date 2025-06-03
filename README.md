@@ -48,8 +48,10 @@ docker-compose up --build
 
 # Check system health
 curl http://localhost:8000/health
-Verify Operation
-bash# View recent anomalies
+```
+### Verify Operation
+```bash
+# View recent anomalies
 curl http://localhost:8000/anomalies
 
 # Get AI summary
@@ -64,8 +66,8 @@ curl http://localhost:8000/metrics
 
 Custom Configuration
 # Example with custom thresholds
-DRIFT_THRESHOLD=35.0 
-PRESSURE_SPIKE_THRESHOLD=3.5 
+ -  DRIFT_THRESHOLD=35.0 
+ -  PRESSURE_SPIKE_THRESHOLD=3.5 
 
 docker-compose up
 
@@ -76,13 +78,12 @@ Core Endpoints
  - GET /anomalies?limit=20&severity=high - Recent anomalies
  - GET /summary?anomaly_count=10 - AI-generated summary
  - GET /status - Component status
- - GET /metrics - System metrics
- - DELETE /anomalies - Clear anomaly log
 
 # Response Examples
 
 ### Health Check
-```json{
+```json
+{
   "status": "healthy",
   "components": {
     "redis": "healthy",
@@ -93,7 +94,8 @@ Core Endpoints
 }
 ```
 ### Anomaly Summary
-```json{
+```json
+{
   "summary": "Detected 3 high-severity anomalies requiring immediate attention...",
   "anomaly_count": 15,
   "status": "warning",

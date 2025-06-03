@@ -2,7 +2,7 @@
 import json
 import time
 from datetime import datetime
-from typing import List 
+from typing import List
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +15,7 @@ from models import (
     AnomalyResponse,
     SummaryResponse,
     StatusResponse,
+    HealthResponse
 )
 
 logger = setup_logging(__name__)
@@ -42,30 +43,30 @@ app.add_middleware(
 startup_time = time.time()
 
 
-# @app.get("/health", response_model=HealthResponse)
-# async def get_health():
-#     """Comprehensive health check endpoint"""
-#     components = {
-#         "redis": "healthy" if redis_client.is_healthy() else "unhealthy",
-#         "llm": "healthy" if summarizer.is_healthy() else "unhealthy",
-#         "storage": (
-#             "healthy"
-#             if Path(settings.ANOMALY_LOG_PATH).parent.exists()
-#             else "unhealthy"
-#         )
-#     }
+@app.get("/health", response_model=HealthResponse)
+async def get_health():
+    """Comprehensive health check endpoint"""
+    components = {
+        "redis": "healthy" if redis_client.is_healthy() else "unhealthy",
+        "llm": "healthy" if summarizer.is_healthy() else "unhealthy",
+        "storage": (
+            "healthy"
+            if Path(settings.ANOMALY_LOG_PATH).parent.exists()
+            else "unhealthy"
+        )
+    }
 
-#     overall_status = (
-#         "healthy"
-#         if all(status == "healthy" for status in components.values())
-#         else "degraded"
-#     )
+    overall_status = (
+        "healthy"
+        if all(status == "healthy" for status in components.values())
+        else "degraded"
+    )
 
-#     return HealthResponse(
-#         status=overall_status,
-#         components=components,
-#         uptime_seconds=int(time.time() - startup_time)
-#     )
+    return HealthResponse(
+        status=overall_status,
+        components=components,
+        uptime_seconds=int(time.time() - startup_time)
+    )
 
 
 @app.get("/anomalies", response_model=List[AnomalyResponse])

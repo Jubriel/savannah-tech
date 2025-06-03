@@ -1,27 +1,109 @@
-FROM python:3.11-slim
+# FROM python:3.11-slim
 
-# Install Ollama
+# # Install Ollama
+# RUN apt-get update && apt-get install -y \
+#     curl \
+#     && curl -fsSL https://ollama.ai/install.sh | sh \
+#     && rm -rf /var/lib/apt/lists/*
+
+# WORKDIR /app
+
+# # Copy requirements and install
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir --upgrade pip
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# # Copy application code
+# COPY . .
+
+# # Start script that runs Ollama and pulls model
+# COPY start-llm.sh start-llm.sh
+# RUN chmod +x start-llm.sh
+
+# ENV LLM_HOST=0.0.0.0:11434
+
+# EXPOSE 11434
+
+# CMD ["/app/start-llm.sh"]
+
+
+# Multi-stage build for model preparation
+FROM python:3.11-slim as model-builder
+
+# Install Ollama for model downloading
 RUN apt-get update && apt-get install -y \
     curl \
+    ca-certificates \
     && curl -fsSL https://ollama.ai/install.sh | sh \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Set up Ollama directory as root (for build permissions)
+RUN mkdir -p /tmp/ollama-home
+ENV OLLAMA_HOME=/tmp/ollama-home
+
+# Download model as root during build
+RUN ollama serve & \
+    OLLAMA_PID=$! && \
+    echo "Waiting for Ollama to start..." && \
+    timeout=60 && \
+    while [ $timeout -gt 0 ] && ! curl -f http://localhost:11434/api/version > /dev/null 2>&1; do \
+        sleep 2; \
+        timeout=$((timeout-2)); \
+        echo "Waiting... ($((60-timeout)) seconds)"; \
+    done && \
+    if [ $timeout -le 0 ]; then echo "Ollama failed to start" && exit 1; fi && \
+    echo "Downloading llama3.2:3b model..." && \
+    ollama pull llama3.2:3b && \
+    echo "Model downloaded successfully" && \
+    ollama list && \
+    kill $OLLAMA_PID && \
+    wait $OLLAMA_PID 2>/dev/null || true
+
+# Final runtime stage
+FROM python:3.11-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    && curl -fsSL https://ollama.ai/install.sh | sh \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create ollama user with proper home directory
+RUN useradd -m -u 1000 ollama && \
+    mkdir -p /home/ollama/.ollama
+
+# Copy the pre-downloaded model from builder stage and set ownership
+COPY --from=model-builder /tmp/ollama-home /home/ollama/.ollama
+RUN chown -R ollama:ollama /home/ollama/.ollama && \
+    chmod -R 755 /home/ollama/.ollama
 
 WORKDIR /app
 
-# Copy requirements and install
+# Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
 
-# Start script that runs Ollama and pulls model
-COPY start-llm.sh start-llm.sh
-RUN chmod +x start-llm.sh
-
+# Set environment variables
 ENV LLM_HOST=0.0.0.0:11434
+# ENV OLLAMA_HOST=0.0.0.0:11434
+ENV OLLAMA_HOME=/home/ollama/.ollama
 
+# Switch to non-root user
+USER ollama
+
+# Expose Ollama port
 EXPOSE 11434
 
-CMD ["/app/start-llm.sh"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:11434/api/version || exit 1
+
+# Simple direct command since model is pre-loaded
+CMD ["ollama", "serve"]
