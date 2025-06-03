@@ -4,7 +4,7 @@ from typing import Dict
 
 class Settings:
     # Redis Configuration
-    REDIS_HOST: str = os.getenv('REDIS_HOST', 'redis')
+    REDIS_HOST: str = os.getenv('REDIS_HOST', 'localhost')
     REDIS_PORT: int = int(os.getenv('REDIS_PORT', '6379'))
     REDIS_DB: int = int(os.getenv('REDIS_DB', '0'))
     REDIS_RETRY_ATTEMPTS: int = int(os.getenv('REDIS_RETRY_ATTEMPTS', '3'))

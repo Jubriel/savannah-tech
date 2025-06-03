@@ -1,3 +1,4 @@
+# typed: ignore
 import json
 from typing import List, Dict, Any, Optional
 from pathlib import Path
